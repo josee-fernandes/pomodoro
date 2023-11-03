@@ -69,7 +69,9 @@ const App = () => {
   const countdown = useCallback(() => {
     const timeout = setTimeout(() => {
       if (counter > 0) {
-        setCounter((oldCounter) => oldCounter - 1000)
+        setCounter((oldCounter) =>
+          oldCounter !== 0 ? oldCounter - 1000 : oldCounter
+        )
       } else if (status !== 'stopped') {
         updateStatus()
       }
