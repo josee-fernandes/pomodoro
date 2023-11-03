@@ -1,12 +1,13 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { Progress } from './components/Progress'
 
 const src = '/src/brand_new_day.mp3'
 
 const minutesToMilliseconds = (minutes: number) => minutes * 60 * 1000
 const secondsToMilliseconds = (seconds: number) => seconds * 1000
 
-const workingTime = minutesToMilliseconds(0.5)
-const restingTime = minutesToMilliseconds(0.25)
+const workingTime = minutesToMilliseconds(25)
+const restingTime = minutesToMilliseconds(5)
 
 const App = () => {
   const [counter, setCounter] = useState(0)
@@ -91,28 +92,26 @@ const App = () => {
   }, [status, countdown])
 
   return (
-    <div>
-      <div>status: {status}</div>
-
-      <div className="max-w-sm">
-        <audio
-          ref={audioRef}
-          src={src}
-          loop={true}
-          autoPlay={false}
-          className="hidden"
-        />
-        <div className="flex gap-4">
-          <input
-            type="range"
-            min={0}
-            max={max}
-            value={counter}
-            className="w-full"
-            readOnly
-          />
+    <div className="w-screen h-screen flex items-center justify-center flex-col border-2">
+      <audio
+        ref={audioRef}
+        src={src}
+        loop={true}
+        autoPlay={false}
+        className="hidden"
+      />
+      <div className="flex items-center justify-center flex-col gap-4">
+        <div>
+          <Progress
+            time={status === 'working' ? workingTime : restingTime}
+            status={status}
+          >
+            <p className="text-center font-black text-5xl leading-3">
+              {counter / 1000}
+            </p>
+          </Progress>
         </div>
-        <div className="flex gap-4">
+        <div className="">
           {status === 'stopped' && (
             <button onClick={startClock}>▶️ START CLOCK</button>
           )}
@@ -120,12 +119,11 @@ const App = () => {
             <button onClick={stopClock}>⏹️ STOP CLOCK</button>
           )}
         </div>
-        <p>workingTime: {workingTime}</p>
-        <p>restingTime: {restingTime}</p>
-        <p>counter: {counter}</p>
         {playing && (
-          <div>
-            <p>Status changed ...</p>
+          <div className="flex flex-col gap-2">
+            <p className="text-center font-bold">
+              {status === 'working' ? 'WORK!' : 'REST!'}
+            </p>
             <button className="bg-gray-200 p-2 rounded" onClick={stopAudio}>
               ⛔ STOP AUDIO
             </button>
