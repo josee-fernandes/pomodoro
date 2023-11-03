@@ -1,5 +1,7 @@
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Progress } from './components/Progress'
+
+import { format } from 'date-fns'
 
 const src = '/src/brand_new_day.mp3'
 
@@ -15,15 +17,7 @@ const App = () => {
   const [status, setStatus] = useState<TClockStatus>('stopped')
   const [playing, setPlaying] = useState(false)
 
-  const max = useMemo(
-    () =>
-      status === 'stopped'
-        ? 0
-        : status === 'working'
-        ? workingTime
-        : restingTime,
-    [status]
-  )
+  const timeString = useMemo(() => format(counter, 'mm:ss'), [counter])
 
   const audioRef = useRef<HTMLAudioElement>(null)
 
@@ -107,16 +101,26 @@ const App = () => {
             status={status}
           >
             <p className="text-center font-black text-5xl leading-3">
-              {counter / 1000}
+              {timeString}
             </p>
           </Progress>
         </div>
         <div className="">
-          {status === 'stopped' && (
-            <button onClick={startClock}>▶️ START CLOCK</button>
+          {status === 'stopped' && !playing && (
+            <button
+              className="bg-emerald-500 text-white font-bold p-2 rounded"
+              onClick={startClock}
+            >
+              START CLOCK
+            </button>
           )}
-          {status !== 'stopped' && (
-            <button onClick={stopClock}>⏹️ STOP CLOCK</button>
+          {status !== 'stopped' && !playing && (
+            <button
+              className="bg-red-500 text-white font-bold p-2 rounded"
+              onClick={stopClock}
+            >
+              STOP CLOCK
+            </button>
           )}
         </div>
         {playing && (
