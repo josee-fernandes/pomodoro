@@ -12,6 +12,7 @@ const App = () => {
   const [counter, setCounter] = useState(0)
 
   const [status, setStatus] = useState<TClockStatus>('stopped')
+  const [playing, setPlaying] = useState(false)
 
   const max = useMemo(
     () =>
@@ -30,6 +31,21 @@ const App = () => {
     setStatus('working')
   }, [setStatus])
 
+  const playAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.play()
+      setPlaying(true)
+    }
+  }, [audioRef])
+
+  const stopAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+      setPlaying(false)
+    }
+  }, [audioRef])
+
   const updateStatus = useCallback(() => {
     switch (status) {
       case 'stopped':
@@ -38,15 +54,17 @@ const App = () => {
       case 'working':
         setCounter(restingTime)
         setStatus('resting')
+        playAudio()
         break
       case 'resting':
         setCounter(workingTime)
         setStatus('working')
+        playAudio()
         break
       default:
         setCounter(0)
     }
-  }, [status, setStatus])
+  }, [status, setStatus, playAudio])
 
   const countdown = useCallback(() => {
     const timeout = setTimeout(() => {
@@ -63,20 +81,8 @@ const App = () => {
   const stopClock = useCallback(() => {
     setCounter(0)
     setStatus('stopped')
-  }, [setStatus])
-
-  const playAudio = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.play()
-    }
-  }, [audioRef])
-
-  const stopAudio = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current.currentTime = 0
-    }
-  }, [audioRef])
+    stopAudio()
+  }, [stopAudio])
 
   useEffect(() => {
     if (status !== 'stopped') countdown()
@@ -106,15 +112,23 @@ const App = () => {
         </div>
         <div className="flex gap-4">
           {status === 'stopped' && (
-            <button onClick={startClock}>▶️ startClock</button>
+            <button onClick={startClock}>▶️ START CLOCK</button>
           )}
           {status !== 'stopped' && (
-            <button onClick={stopClock}>⏹️ stopClock</button>
+            <button onClick={stopClock}>⏹️ STOP CLOCK</button>
           )}
         </div>
         <p>workingTime: {workingTime}</p>
         <p>restingTime: {restingTime}</p>
         <p>counter: {counter}</p>
+        {playing && (
+          <div>
+            <p>Status changed ...</p>
+            <button className="bg-gray-200 p-2 rounded" onClick={stopAudio}>
+              ⛔ STOP AUDIO
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
