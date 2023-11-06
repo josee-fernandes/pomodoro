@@ -5,7 +5,7 @@ interface IProgress extends PropsWithChildren {
   status: TClockStatus
 }
 
-export const Progress: React.FC<IProgress> = ({ children, time, status }) => {
+const Progress: React.FC<IProgress> = ({ children, time, status }) => {
   const color = useMemo(
     () =>
       status === 'stopped'
@@ -44,3 +44,7 @@ export const Progress: React.FC<IProgress> = ({ children, time, status }) => {
     </div>
   )
 }
+
+Progress.displayName = 'Progress'
+
+export default Progress

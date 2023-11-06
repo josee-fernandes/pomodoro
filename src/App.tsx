@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { Progress } from './components/Progress'
+
+import constants from '~/const'
 
 import { format } from 'date-fns'
+import utils from '~/utils'
 
-const src = '/src/brand_new_day.mp3'
+import Progress from '~/components/Progress'
 
-const minutesToMilliseconds = (minutes: number) => minutes * 60 * 1000
-const secondsToMilliseconds = (seconds: number) => seconds * 1000
+const { WORKING_TIME_MS, RESTING_TIME_MS } = constants.time
+const { MUSIC_SRC } = constants.audio
 
-const workingTime = minutesToMilliseconds(25)
-const restingTime = minutesToMilliseconds(5)
+const { secondsToMilliseconds } = utils
 
 const App = () => {
   const [counter, setCounter] = useState(0)
@@ -22,7 +23,7 @@ const App = () => {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const startClock = useCallback(() => {
-    setCounter(workingTime)
+    setCounter(WORKING_TIME_MS)
     setStatus('working')
   }, [setStatus])
 
@@ -47,12 +48,12 @@ const App = () => {
         setCounter(0)
         break
       case 'working':
-        setCounter(restingTime)
+        setCounter(RESTING_TIME_MS)
         setStatus('resting')
         playAudio()
         break
       case 'resting':
-        setCounter(workingTime)
+        setCounter(WORKING_TIME_MS)
         setStatus('working')
         playAudio()
         break
@@ -89,7 +90,7 @@ const App = () => {
     <div className="w-screen h-screen flex items-center justify-center flex-col border-2">
       <audio
         ref={audioRef}
-        src={src}
+        src={MUSIC_SRC}
         loop={true}
         autoPlay={false}
         className="hidden"
@@ -97,7 +98,7 @@ const App = () => {
       <div className="flex items-center justify-center flex-col gap-4">
         <div>
           <Progress
-            time={status === 'working' ? workingTime : restingTime}
+            time={status === 'working' ? WORKING_TIME_MS : RESTING_TIME_MS}
             status={status}
           >
             <p className="text-center font-black text-5xl leading-3">
